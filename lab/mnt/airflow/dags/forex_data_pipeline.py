@@ -1,5 +1,6 @@
 from airflow import DAG
 from airflow.providers.http.sensors.http import HttpSensor
+from airflow.sensors.filesystem import FileSensor
 
 from datetime import datetime, timedelta
 
@@ -20,3 +21,9 @@ with DAG(dag_id = "forex_data_pipeline", start_date = datetime(2024, 2, 15), sch
                                           response_check = lambda response: "rates" in response.text,
                                           poke_interval = 5,
                                           timeout = 20)
+    
+    is_forex_currencies_file_available = FileSensor(task_id = "is_forex_currencies_file_available",
+                                                fs_conn_id = "forex_path",
+                                                filepath = "forex_currencies.csv",
+                                                poke_interval = 5,
+                                                timeout = 20)
